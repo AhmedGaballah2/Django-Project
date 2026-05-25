@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <!-- Title -->
+            <h2 class="fw-bold mb-2">Django Web Development</h2>
+
+            <!-- Category -->
+            <span class="badge bg-success mb-3">Web Development</span>
+
+            <!-- Description -->
+            <p class="text-muted">Learn Django from scratch and build powerful web applications with authentication, database models, and real-world projects.</p>
+
+            <hr />
+
+            <!-- Details -->
+            <div class="row">
+              <div class="col-6 mb-3">
+                <strong>Teacher:</strong>
+                <p class="mb-0">Sarah Ali</p>
+              </div>
+
+              <div class="col-6 mb-3">
+                <strong>Level:</strong>
+                <p class="mb-0">Intermediate</p>
+              </div>
+
+              <div class="col-6 mb-3">
+                <strong>Created At:</strong>
+                <p class="mb-0">March 15, 2026</p>
+              </div>
+
+              <div class="col-6 mb-3">
+                <strong>Updated At:</strong>
+                <p class="mb-0">April 01, 2026</p>
+              </div>
+            </div>
+
+            <hr />
+
+            <!-- Actions -->
+            <div class="d-flex gap-2">
+              <a href="{% url 'courses' %}" class="btn btn-secondary w-50">Back</a>
+
+              <a href="#" class="btn btn-primary w-50">Enroll Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

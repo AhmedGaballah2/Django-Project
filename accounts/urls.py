@@ -5,8 +5,8 @@ from . import views
 
 
 urlpatterns= [
-    path("login" , auth_views.LoginView.as_view(template_name="accounts/login.html") ,name="login"),
+    path("login" , views.CustomLoginView.as_view(template_name="accounts/login.html") ,name="login"),
     path("register" , views.register, name="register") , 
-    path("logout" , views.CustomLoginView.as_view(), name =  "logout" ),
+    path("logout" , auth_views.LogoutView.as_view(), name =  "logout" ),
     path("profile" , views.profile , name="profile")
 ]

@@ -28,8 +28,11 @@
           </div>
         {% endfor %}
 
-        <button type="submit" class="signin-btn">Sign In</button>
+        <button type="submit" class="mb-3 signin-btn">Sign In</button>
       </form>
+      <p class="text-center">
+        don't have an account! <a href="{% url 'register' %}">register</a>
+      </p>
     </div>
   </div>
 {% endblock %}

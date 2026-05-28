@@ -11,28 +11,30 @@
     <!-- Courses List -->
     <div class="row g-4">
       <!-- Course 1 -->
-      <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">Python for Beginners</h5>
-            <span class="badge bg-primary mb-2">Programming</span>
+      {% for course in courses %}
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ course.title }}</h5>
+              <span class="badge bg-primary mb-2">{{ course.category }}</span>
 
-            <p class="card-text">Learn Python from scratch with hands-on examples and projects.</p>
+              <p class="card-text">{{ course.description }}</p>
 
-            <p class="mb-1">
-              <strong>Teacher:</strong> John Doe
-            </p>
-            <p class="mb-1">
-              <strong>Level:</strong> Beginner
-            </p>
+              <p class="mb-1">
+                <strong>Teacher:</strong> {{ course.instructor }}
+              </p>
+              <p class="mb-1">
+                <strong>Level:</strong> {{ course.level }}
+              </p>
 
-            <small class="text-muted d-block mt-2">Created: Jan 10, 2026</small>
-            <small class="text-muted d-block">Updated: Feb 02, 2026</small>
+              <small class="text-muted d-block mt-2">Created:{{ course.created_at }}</small>
+              <small class="text-muted d-block">Updated:{{ course.updated_at }}</small>
 
-            <a href="{% url 'course-details' slug='mousa' %}" class="btn btn-primary w-100 mt-3">View Details</a>
+              <a href="{% url 'course-details' course.id %}" class="btn btn-primary w-100 mt-3">View Details</a>
+            </div>
           </div>
         </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 {% endblock %}

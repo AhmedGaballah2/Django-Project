@@ -46,11 +46,13 @@
             <div class="d-flex gap-2">
               <a href="{% url 'courses' %}" class="btn w-100 btn-secondary w-50">Back</a>
 
-              {% if not is_enrolled %}
-                <form action="{% url 'enroll-course' id=course.id %}" method="POST">
-                  {% csrf_token %}
-                  <button type="submit" class="btn w-100 btn-primary w-50">Enroll Now</button>
-                </form>
+              {% if request.user.is_authenticated and request.user.profile.role == 'student' %}
+                {% if not is_enrolled %}
+                  <form action="{% url 'enroll-course' id=course.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn w-100 btn-primary w-50">Enroll Now</button>
+                  </form>
+                {% endif %}
               {% endif %}
 
               {% comment %} {% if user.is_authenticated and user.profile.role == 'student' %}

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  {% if user.profile.role == 'student' or user.profile.role == 'instructor' %}
+    {% include 'nav.html' %}
+  {% endif %}
+
   <div class="container py-5">
     <!-- Page Header -->
     <div class="text-center mb-5">

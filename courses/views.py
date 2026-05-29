@@ -23,14 +23,17 @@ def courses(request):
 #     is_enrolled = Enrollment.objects.filter(course=course , student=request.user).exists()
 #     return render (request , "courses/course-details.html" , {"course":course , "is_enrolled":is_enrolled})
 
+# def course_details(request , id ):
+#     course = get_object_or_404(Course,pk=id)
+#     is_enrolled = False
+#     if request.user.is_authenticated and request.user.profile.role == "student":
+#         is_enrolled = Enrollment.objects.filter(course=course , student=request.user).exists()
+#     return render (request , "courses/course-details.html" , {"course":course , "is_enrolled":is_enrolled})
+
 def course_details(request , id ):
     course = get_object_or_404(Course,pk=id)
-    is_enrolled = False
-    if request.user.is_authenticated and request.user.profile.role == "student":
-        is_enrolled = Enrollment.objects.filter(course=course , student=request.user).exists()
+    is_enrolled = Enrollment.objects.filter(course=course , student=request.user).exists()
     return render (request , "courses/course-details.html" , {"course":course , "is_enrolled":is_enrolled})
-
-
 
 
 @login_required

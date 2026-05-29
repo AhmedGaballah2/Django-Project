@@ -44,7 +44,10 @@
               </div>
 
               <!-- Submit -->
-              <button class="btn btn-primary w-100 py-2">Create Course</button>
+              <div class="d-flex column-gap-2">
+                <button class="btn btn-primary w-100 py-2">Create Course</button>
+                <a href="{% url 'courses' %}" class="btn btn-secondary w-100 py-2">back</a>
+              </div>
             </form>
           </div>
         </div>

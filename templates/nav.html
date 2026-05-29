@@ -1,0 +1,32 @@
+{% if user.is_authenticated %}
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Coursera</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'courses' %}">Courses</a>
+          </li>
+          {% if user.profile.role == 'student' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'student-enrollments' %}">Enrollments</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'instructor-courses' %}">My courses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create-course' %}">Create</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      <p class="btn btn-primary m-0 me-2">{{ user.profile.owner }}</p>
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Log Out</button>
+      </form>
+    </div>
+  </nav>
+{% endif %}

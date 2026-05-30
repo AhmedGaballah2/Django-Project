@@ -1,6 +1,6 @@
 
 from rest_framework import serializers 
-from ..models import Course
+from ..models import Course , Enrollment
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -12,3 +12,18 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ["id" ,"title" , "level" ,"level_display" ,  "description" ,  "instructor" ,"instructor_display"  , "category" ,"category_display" ,  "created_at" , "updated_at"]
         read_only_fields= ["created_at" ,"updated_at" , "is_published" , "instructor"]
+
+
+
+
+
+
+
+class StudentEnrollmentSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source="course.title" , read_only=True)
+    category = serializers.CharField(source="course.category.name" , read_only=True )
+    level = serializers.CharField(source ="course.level" ,  read_only=True)
+    instructor = serializers.CharField(source="course.instructor" , read_only=True)
+    class Meta:
+        model = Enrollment
+        fields = [ "student" , "course", "enrolled_at" ,   "title"   , "instructor" , "level" , "category" ]

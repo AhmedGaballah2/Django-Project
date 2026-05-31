@@ -10,7 +10,7 @@ class CourseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Course
-        fields = ["id" ,"title" , "level" ,"level_display" ,  "description" ,  "instructor" ,"instructor_display"  , "category" ,"category_display" ,  "created_at" , "updated_at"]
+        fields = ["id" ,"title" , "level" ,"level_display" ,  "description" ,  "instructor" ,"instructor_display"  , "category" ,"category_display" ,  "created_at" , "updated_at", "is_published"]
         read_only_fields= ["created_at" ,"updated_at" , "is_published" , "instructor"]
 
 

@@ -7,6 +7,7 @@ from ..models import Course , Enrollment
 from .serializers import CourseSerializer , StudentEnrollmentSerializer
 from django.shortcuts import get_object_or_404
 from .permissions import IsInstructorOrReadOnly , IsStudent ,IsInstructor
+from django.db.models import Q
 
 
 
@@ -25,8 +26,25 @@ def courses_list(request):
        else:
         #    raise ValidationError(serializer.errors)
            return Response(serializer.errors , status.HTTP_400_BAD_REQUEST)
+       
 
-    courses = Course.objects.filter(is_published=True)
+    courses = Course.objects.filter(is_published=True,)
+    level = request.query_params.get("level")
+    if level :
+        courses = courses.filter(level=level)
+
+    category = request.query_params.get("category")
+    if category:
+        print(category)
+        courses =courses.filter(category__slug=category)
+
+    search = request.query_params.get("search")
+    if search :
+        courses = courses.filter(
+           Q(title__icontains=search) |
+           Q(description__icontains=search)|
+           Q(category__name__icontains=search)
+        )
     serializer = CourseSerializer(courses , many=True)
     return Response(serializer.data , status.HTTP_200_OK)
 

@@ -34,14 +34,28 @@ class   CoursesAPIView(APIView):
             raise NotFound({"error":"there is no course matches this id"})
         
 
-    def get(self ,request,id=None):
-        if id :
-            course  = self.get_object(id)
-            serializer = CourseSerializer(course)
-            return Response(serializer.data,status.HTTP_200_OK)
-        courses = Course.objects.filter(is_published=True)
-        serializer = CourseSerializer(courses,many=True)
-        return Response(serializer.data , status.HTTP_200_OK)
+    def get(self, request, id=None):
+     if id:
+        course = self.get_object(id)
+        serializer = CourseSerializer(course)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+     courses = Course.objects.filter(is_published=True)
+
+     level = request.query_params.get("level")
+     if level:
+        courses = courses.filter(level=level)
+
+     category = request.query_params.get("category")
+     if category:
+        courses = courses.filter(category__slug=category)
+
+     search = request.query_params.get("search")
+     if search:
+        courses = courses.filter(title__icontains=search)
+
+     serializer = CourseSerializer(courses, many=True)
+     return Response(serializer.data, status.HTTP_200_OK)
     
 
     def post(self, request):

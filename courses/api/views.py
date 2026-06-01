@@ -6,8 +6,84 @@ from rest_framework.response import Response
 from ..models import Course , Enrollment
 from .serializers import CourseSerializer , StudentEnrollmentSerializer
 from django.shortcuts import get_object_or_404
-from .permissions import IsInstructorOrReadOnly , IsStudent ,IsInstructor
+from .permissions import IsInstructorOrReadOnly , IsStudent ,IsInstructor ,IsOwner
 from django.db.models import Q
+from rest_framework.views import APIView
+
+
+
+
+
+
+class   CoursesAPIView(APIView):
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        
+      
+        return [IsAuthenticated() , IsInstructor() , IsOwner()]
+  
+
+    def get_object(self,id):
+        try:
+         
+           course = Course.objects.get(pk=id)
+           return course
+        except Course.DoesNotExist :
+            raise NotFound({"error":"there is no course matches this id"})
+        
+
+    def get(self ,request,id=None):
+        if id :
+            course  = self.get_object(id)
+            serializer = CourseSerializer(course)
+            return Response(serializer.data,status.HTTP_200_OK)
+        courses = Course.objects.filter(is_published=True)
+        serializer = CourseSerializer(courses,many=True)
+        return Response(serializer.data , status.HTTP_200_OK)
+    
+
+    def post(self, request):
+        serializer = CourseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(instructor=request.user)
+            return Response(serializer.data , status.HTTP_201_CREATED)
+        return Response(serializer.errors , status.HTTP_400_BAD_REQUEST)
+    
+
+
+    def delete(self , request ,id):
+        course = self.get_object(id)
+        self.check_object_permissions(request,course)
+        course.delete()
+        return Response(status.HTTP_204_NO_CONTENT)
+    
+
+
+    def put(self,request,id):
+        course = self.get_object(id)
+        self.check_object_permissions(request,course)
+
+        serializer = CourseSerializer(course,data=request.data , partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status.HTTP_200_OK)
+        return Response(serializer.errors , status.HTTP_400_BAD_REQUEST)
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

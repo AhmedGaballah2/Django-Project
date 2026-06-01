@@ -10,8 +10,8 @@ class ProfileForm(forms.ModelForm):
         ("student" , "Student")
 
       ]
-    bio = forms.CharField(max_length=100 ,widget=forms.Textarea)
-    role = forms.ChoiceField(choices=ROLE_CHOICES)
+    bio = forms.CharField(max_length=100 ,widget=forms.Textarea ,required=False)
+    role = forms.ChoiceField(choices=ROLE_CHOICES, required=True)
 
 
     class Meta:

@@ -72,15 +72,37 @@ class   CoursesAPIView(APIView):
         return Response(serializer.errors , status.HTTP_400_BAD_REQUEST)
             
 
+class StudentEnrollmentsAPIView(APIView):
+    permission_classes=[IsAuthenticated ,IsStudent]
+    def get(self,request):
+        enrollments= Enrollment.objects.filter(student=request.user)
+        serializer =   StudentEnrollmentSerializer(enrollments,many=True)
+        return Response(serializer.data , status.HTTP_200_OK)
 
 
 
+class EnrollStudentAPIView(APIView):
+    permission_classes=[IsAuthenticated,IsStudent]
 
 
-
-
-
-
+    def post(self,request,id):
+        try:
+           course = Course.objects.get(pk=id)
+           if Enrollment.objects.filter(student = request.user , course=course).exists():
+               return Response({"error":"you has been enrolled in this course before"},status.HTTP_400_BAD_REQUEST)
+           enrollment = Enrollment.objects.create(student = request.user , course=course)
+           serializer =   StudentEnrollmentSerializer(enrollment)
+           return Response(serializer.data , status.HTTP_201_CREATED)
+        except Course.DoesNotExist:
+            return NotFound({"error":"there is no course match this id"}) 
+        
+        
+class InstructorCoursesAPIView(APIView):
+    permission_classes=[IsAuthenticated,IsInstructor]
+    def get (self , request):
+        courses = Course.objects.filter(instructor = request.user)
+        serializer = CourseSerializer(courses,many=True)
+        return Response(serializer.data , status.HTTP_200_OK)
 
 
 

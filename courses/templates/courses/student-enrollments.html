@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  My Enrollments
+{% endblock %}
+
+{% block content %}
+  {% include 'nav.html' %}
+
+  <div class="container py-5">
+    <!-- Header -->
+    <div class="mb-5 text-center">
+      <h1 class="fw-bold">My Enrollments</h1>
+
+      <p class="text-muted">Courses you are currently enrolled in</p>
+    </div>
+
+    <!-- Content -->
+    <div class="row g-4">
+      {% for enrollment in enrollments %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex flex-column">
+              <!-- Course Title -->
+              <h4 class="fw-bold mb-3">{{ enrollment.course.title }}</h4>
+
+              <!-- Category -->
+              <p class="mb-1 text-muted">
+                <strong>Category:</strong>
+                {{ enrollment.course.category }}
+              </p>
+
+              <!-- Level -->
+              <p class="mb-1 text-muted">
+                <strong>Level:</strong>
+                {{ enrollment.course.level }}
+              </p>
+
+              <!-- Teacher -->
+              <p class="mb-1 text-muted">
+                <strong>Teacher:</strong>
+                {{ enrollment.course.instructor }}
+              </p>
+
+              <!-- Enrolled At -->
+              <p class="mb-3 text-muted">
+                <strong>Enrolled:</strong>
+                {{ enrollment.enrolled_at|date:'M d, Y' }}
+              </p>
+
+              <!-- Status Badge -->
+              <div class="mb-3">
+                {% if enrollment.course.is_published %}
+                  <span class="badge bg-success">Active Course</span>
+                {% else %}
+                  <span class="badge bg-secondary">Not Published</span>
+                {% endif %}
+              </div>
+
+              <!-- Button -->
+              <a href="{% url 'course-details' enrollment.course.id %}" class="btn btn-primary mt-auto">View Course</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-info text-center">
+            <h4>No Enrollments Yet</h4>
+
+            <p class="mb-3">You have not enrolled in any course yet.</p>
+
+            <a href="{% url 'courses' %}" class="btn btn-primary">Browse Courses</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

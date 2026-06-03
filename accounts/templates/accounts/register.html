@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_file %}
+  <link rel="stylesheet" href="{% static 'accounts/style.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="signin-page">
+    <div class="sign-form">
+      <div class="form-header">
+        <h2>Create Account</h2>
+        <p>Register to get started</p>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="form-control-custom">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <small class="help-text">{{ field.help_text }}</small>
+            {% endif %}
+
+            {% if field.errors %}
+              <small class="error">{{ field.errors|striptags }}</small>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="signin-btn">Register</button>
+      </form>
+
+      <div class="form-footer">
+        <p>
+          Already have an account?
+          <a href="{% url 'login' %}">Sign In</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

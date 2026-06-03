@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Edit Course
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+  <div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+      <div class="card shadow border-0">
+
+        <div class="card-body p-5">
+
+          <!-- Header -->
+          <div class="text-center mb-5">
+
+            <h1 class="fw-bold">
+              Edit Course
+            </h1>
+
+            <p class="text-muted">
+              Update your course information
+            </p>
+
+          </div>
+
+          <!-- Form -->
+          <form method="POST">
+
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="mb-4">
+
+              <label class="form-label fw-semibold">Title</label>
+
+              <input
+                type="text"
+                name="title"
+                class="form-control"
+                value="{{ form.title.value }}"
+              >
+
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+
+              <label class="form-label fw-semibold">Description</label>
+
+              <textarea
+                name="description"
+                rows="6"
+                class="form-control"
+              >{{ form.description.value }}</textarea>
+
+            </div>
+
+            <!-- Category -->
+            <div class="mb-4">
+
+              <label class="form-label fw-semibold">Category</label>
+
+               {{form.category}}
+
+            </div>
+
+            <!-- Level -->
+            <div class="mb-4">
+
+              <label class="form-label fw-semibold">Level</label>
+
+              <select name="level" class="form-select">
+
+                <option value="beginner"
+                  {% if form.level.value == "beginner" %}selected{% endif %}
+                >
+                  Beginner
+                </option>
+
+                <option value="intermediate"
+                  {% if form.level.value == "intermediate" %}selected{% endif %}
+                >
+                  Intermediate
+                </option>
+
+                <option value="advanced"
+                  {% if form.level.value == "advanced" %}selected{% endif %}
+                >
+                  Advanced
+                </option>
+
+              </select>
+
+            </div>
+
+          
+
+            <!-- Buttons -->
+            <div class="d-flex gap-3">
+
+              <a
+                href="{% url 'instructor-courses' %}"
+                class="btn btn-outline-secondary w-50"
+              >
+                Cancel
+              </a>
+
+              <button
+                type="submit"
+                class="btn btn-primary w-50"
+              >
+                Save Changes
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

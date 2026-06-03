@@ -15,7 +15,7 @@ urlpatterns=[
 
     # path("my-enrollments" , views.student_enrollment , name = "student-enrollment"),
     
-    path("courses/<int:id>/enroll" , views.EnrollStudentAPIView.as_view() , name="enroll-course" ),
+    path("courses/<int:id>/enroll" , views.EnrollStudentAPIView.as_view() ),
     path("my-courses" , views.InstructorCoursesAPIView.as_view() ),
     
 ]

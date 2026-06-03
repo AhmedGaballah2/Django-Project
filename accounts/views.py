@@ -51,7 +51,7 @@ class CustomLoginView(LoginView):
 
      def get_success_url(self):
            if self.request.user.profile.role == "instructor":
-                return reverse_lazy("instructor-courses")
+                return reverse_lazy("instructor-courses-template")
            else:
-                return reverse_lazy("courses")
+                return reverse_lazy("courses-template")
      

@@ -3,8 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path ("" ,  views.courses , name="courses"),
-    path("instructor-courses" , views.instructor_courses , name="instructor-courses"),
+    path ("" ,  views.courses , name="courses-template"),
+    path("instructor-courses" , views.instructor_courses , name="instructor-courses-template"),
     path("create" , views.create_course , name="create-course"),
     path("<int:id>/delete" , views.delete_course , name="delete-course"),
     path("<int:id>/edit" , views.edit_course , name="edit-course"),

@@ -1,20 +1,61 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% if user.profile.role == 'student' or user.profile.role == 'instructor' %}
-    {% include 'nav.html' %}
+  {% if user.is_authenticated %}
+    {% if user.profile.role == 'student' or user.profile.role == 'instructor' %}
+      {% include 'nav.html' %}
+    {% endif %}
   {% endif %}
 
   <div class="container py-5">
-    <!-- Page Header -->
-    <div class="text-center mb-5">
+    <div class="text-center mb-4">
       <h2 class="fw-bold">Available Courses</h2>
       <p class="text-muted">Browse our top learning courses</p>
     </div>
 
-    <!-- Courses List -->
+    <form method="get" class="row g-3 mb-4 p-3 bg-light rounded">
+      <div class="col-md-4">
+        <label class="form-label" for="search">Search</label>
+        <input
+          type="text"
+          class="form-control"
+          id="search"
+          name="search"
+          value="{{ search }}"
+          placeholder="Title or description..."
+        />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="category">Category</label>
+        <select class="form-select" id="category" name="category">
+          <option value="">All categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="level">Level</label>
+        <select class="form-select" id="level" name="level">
+          <option value="">All levels</option>
+          <option value="beginner" {% if selected_level == 'beginner' %}selected{% endif %}>Beginner</option>
+          <option value="intermediate" {% if selected_level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+          <option value="advanced" {% if selected_level == 'advanced' %}selected{% endif %}>Advanced</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <a href="{% url 'courses' %}" class="btn btn-outline-secondary w-100">Clear</a>
+      </div>
+    </form>
+
+    {% if not courses %}
+      <p class="text-center text-muted">No courses match your filters.</p>
+    {% endif %}
+
     <div class="row g-4">
-      <!-- Course 1 -->
       {% for course in courses %}
         <div class="col-md-4">
           <div class="card shadow-sm h-100">
@@ -22,17 +63,16 @@
               <h5 class="card-title">{{ course.title }}</h5>
               <span class="badge bg-primary mb-2">{{ course.category }}</span>
 
-              <p class="card-text">{{ course.description }}</p>
+              <p class="card-text">{{ course.description|truncatewords:30 }}</p>
 
               <p class="mb-1">
                 <strong>Teacher:</strong> {{ course.instructor }}
               </p>
               <p class="mb-1">
-                <strong>Level:</strong> {{ course.level }}
+                <strong>Level:</strong> {{ course.get_level_display }}
               </p>
 
-              <small class="text-muted d-block mt-2">Created:{{ course.created_at }}</small>
-              <small class="text-muted d-block">Updated:{{ course.updated_at }}</small>
+              <small class="text-muted d-block mt-2">Created: {{ course.created_at }}</small>
 
               <a href="{% url 'course-details' course.id %}" class="btn btn-primary w-100 mt-3">View Details</a>
             </div>

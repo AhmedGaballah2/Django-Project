@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category , Course
+from .models import Category, Course, CourseDocument
 
 
 
@@ -47,4 +47,9 @@ class CourseForm(forms.ModelForm):
             "category",
             "level"
         ]
-    
+
+
+class CourseDocumentForm(forms.ModelForm):
+    class Meta:
+        model = CourseDocument
+        fields = ["title", "file"]

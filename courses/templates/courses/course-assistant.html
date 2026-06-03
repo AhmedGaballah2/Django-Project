@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% include 'nav.html' %}
+
+  <div class="container py-5">
+    <h2 class="fw-bold mb-1">Course Assistant</h2>
+    <p class="text-muted mb-4">{{ course.title }}</p>
+
+    <div class="card shadow-sm mb-4" style="max-height: 420px; overflow-y: auto;">
+      <div class="card-body">
+        {% if chat_messages %}
+          {% for msg in chat_messages %}
+            <div class="mb-3 {% if msg.role == 'user' %}text-end{% endif %}">
+              <small class="text-muted d-block">
+                {% if msg.role == 'user' %}You{% else %}Assistant{% endif %}
+                {% if msg.source %} — {{ msg.source }}{% endif %}
+              </small>
+              <div class="p-2 rounded {% if msg.role == 'user' %}bg-primary text-white d-inline-block{% else %}bg-light{% endif %}">
+                {{ msg.content|linebreaksbr }}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted mb-0">Ask a question about this course to get started.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <form method="post" class="card shadow-sm">
+      <div class="card-body">
+        {% csrf_token %}
+        <label class="form-label" for="message">Your message</label>
+        <textarea class="form-control mb-3" id="message" name="message" rows="3" required></textarea>
+        <button type="submit" class="btn btn-primary">Send</button>
+        <a href="{% url 'course-details' course.id %}" class="btn btn-outline-secondary ms-2">Back to course</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

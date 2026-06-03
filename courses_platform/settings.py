@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,7 +35,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
-    'courses',
+    'courses.apps.CoursesConfig',
     'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -123,6 +125,20 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
      BASE_DIR / "accounts" ,
 ]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+CHROMA_PERSIST_DIR = BASE_DIR / "chroma_data"
+
+OPENROUTER_API_KEY = config("OPENROUTER_API_KEY", default="")
+OPENAI_API_KEY = config("OPENAI_API_KEY", default=OPENROUTER_API_KEY)
+OPENAI_API_BASE = config("OPENAI_API_BASE", default="https://openrouter.ai/api/v1")
+OPENAI_CHAT_MODEL = config("OPENAI_CHAT_MODEL", default="openai/gpt-4o-mini")
+OPENAI_EMBEDDING_MODEL = config(
+    "OPENAI_EMBEDDING_MODEL", default="openai/text-embedding-3-small"
+)
+OPENROUTER_SITE_URL = config("OPENROUTER_SITE_URL", default="http://127.0.0.1:8000")
+OPENROUTER_APP_NAME = config("OPENROUTER_APP_NAME", default="Courses Platform")
 
 LOGIN_URL="/accounts/login"
 LOGIN_REDIRECT_URL= "/"

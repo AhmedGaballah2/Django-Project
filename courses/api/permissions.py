@@ -54,3 +54,15 @@ class IsStudent(BasePermission):
 class IsInstructor(BasePermission):
     def has_permission(self , request , view):
         return request.user.profile.role  == "instructor"
+
+
+class IsEnrolledStudent(BasePermission):
+    message = "You must be enrolled in this course to access this feature."
+
+    def has_permission(self, request, view):
+        return request.user.profile.role == "student"
+
+    def has_object_permission(self, request, view, obj):
+        from ..models import Enrollment
+
+        return Enrollment.objects.filter(student=request.user, course=obj).exists()

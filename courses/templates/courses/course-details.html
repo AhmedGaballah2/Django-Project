@@ -52,7 +52,12 @@
                     {% csrf_token %}
                     <button type="submit" class="btn w-100 btn-primary w-50">Enroll Now</button>
                   </form>
+                {% else %}
+                  <a href="{% url 'course-assistant' id=course.id %}" class="btn btn-success w-50">AI Assistant</a>
                 {% endif %}
+              {% endif %}
+              {% if request.user.is_authenticated and request.user.profile.role == 'instructor' and course.instructor == request.user %}
+                <a href="{% url 'course-documents' id=course.id %}" class="btn btn-outline-primary w-50">Manage Documents</a>
               {% endif %}
 
               {% comment %} {% if user.is_authenticated and user.profile.role == 'student' %}

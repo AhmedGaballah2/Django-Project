@@ -57,10 +57,10 @@
               </div>
 
               <!-- Buttons -->
-              <div class="d-flex gap-2 mt-3">
-                <a href="{% url 'edit-course' course.id %}" class="btn btn-outline-primary w-100">Edit</a>
-
-                <a href="{% url 'delete-course' course.id %}" class="btn btn-outline-danger w-100">Delete</a>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a href="{% url 'edit-course' course.id %}" class="btn btn-outline-primary flex-fill">Edit</a>
+                <a href="{% url 'course-documents' course.id %}" class="btn btn-outline-secondary flex-fill">Documents</a>
+                <a href="{% url 'delete-course' course.id %}" class="btn btn-outline-danger flex-fill">Delete</a>
               </div>
             </div>
           </div>

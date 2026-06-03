@@ -1,6 +1,6 @@
 
 from rest_framework import serializers 
-from ..models import Course , Enrollment
+from ..models import Course , Enrollment, CourseDocument
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -27,3 +27,10 @@ class StudentEnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = [ "student" , "course", "enrolled_at" ,   "title"   , "instructor" , "level" , "category" ]
+
+
+class CourseDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseDocument
+        fields = ["id", "course", "title", "file", "uploaded_at"]
+        read_only_fields = ["course", "uploaded_at"]

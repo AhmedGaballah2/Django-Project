@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Course Recommender{% endblock %}
+
+{% block content %}
+  {% include 'nav.html' %}
+
+  <div class="container py-5" style="max-width: 900px;">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-1">AI Course Advisor</h2>
+      <p class="text-muted mb-0">
+        Chat naturally — ask for course ideas when you are ready. I remember our conversation.
+      </p>
+    </div>
+
+    <div id="chat-scroll" class="card shadow-sm mb-4" style="max-height: 520px; overflow-y: auto;">
+      <div class="card-body" id="chat-messages">
+        {% if chat_messages %}
+          {% for msg in chat_messages %}
+            <div class="mb-4 chat-row {% if msg.role == 'user' %}text-end{% endif %}" data-role="{{ msg.role }}">
+              <small class="text-muted d-block mb-1">
+                {% if msg.role == 'user' %}You{% else %}Course Advisor{% endif %}
+                · {{ msg.created_at|date:"M d, H:i" }}
+              </small>
+              <div
+                class="chat-bubble p-3 rounded {% if msg.role == 'user' %}bg-primary text-white d-inline-block text-start{% else %}bg-light border{% endif %}"
+                style="max-width: 85%; {% if msg.role == 'user' %}margin-left: auto;{% endif %}"
+              >
+                <span class="bubble-text">{{ msg.content }}</span>
+              </div>
+              {% if msg.recommendations_data %}
+                <div class="mt-3 row g-3 rec-cards">
+                  {% for rec in msg.recommendations_data %}
+                    <div class="col-12">
+                      <div class="card border-primary border-opacity-25 h-100">
+                        <div class="card-body text-start">
+                          <h6 class="card-title fw-bold mb-1">{{ rec.title }}</h6>
+                          <p class="text-muted small mb-2">
+                            {{ rec.category }} · {{ rec.level }} · {{ rec.instructor }}
+                          </p>
+                          <p class="card-text small mb-3">{{ rec.explanation }}</p>
+                          <a href="{% url 'course-details' rec.course_id %}" class="btn btn-sm btn-primary">View course</a>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div id="chat-welcome" class="text-center text-muted py-4">
+            <p class="mb-2">👋 Hi! I am your course advisor.</p>
+            <p class="small mb-0">Say hello, or tell me what you would like to learn.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <form id="recommend-chat-form" class="card shadow-sm">
+      <div class="card-body">
+        {% csrf_token %}
+        <label class="form-label" for="message">Your message</label>
+        <textarea
+          class="form-control mb-3"
+          id="message"
+          name="message"
+          rows="2"
+          placeholder="Say hi, or ask about courses..."
+          required
+          autofocus
+        ></textarea>
+        <button type="submit" class="btn btn-primary" id="send-btn">Send</button>
+        <span id="chat-status" class="text-muted small ms-2 d-none">Thinking...</span>
+        <a href="{% url 'courses' %}" class="btn btn-outline-secondary ms-2">Browse all courses</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('recommend-chat-form');
+      const chatBox = document.getElementById('chat-scroll');
+      const chatMessages = document.getElementById('chat-messages');
+      const sendBtn = document.getElementById('send-btn');
+      const statusEl = document.getElementById('chat-status');
+      const courseDetailUrlTemplate = "{% url 'course-details' 999999 %}";
+
+      function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function typeWriter(element, text, speed, onDone) {
+        let index = 0;
+        element.textContent = '';
+        function tick() {
+          if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index += 1;
+            scrollToBottom();
+            setTimeout(tick, speed);
+          } else if (onDone) {
+            onDone();
+          }
+        }
+        tick();
+      }
+
+      function buildRecCards(recs) {
+        if (!recs || !recs.length) return null;
+        const wrap = document.createElement('div');
+        wrap.className = 'mt-3 row g-3 rec-cards';
+        recs.forEach(function (rec) {
+          const col = document.createElement('div');
+          col.className = 'col-12';
+          col.innerHTML =
+            '<div class="card border-primary border-opacity-25 h-100">' +
+            '<div class="card-body text-start">' +
+            '<h6 class="card-title fw-bold mb-1">' + escapeHtml(rec.title) + '</h6>' +
+            '<p class="text-muted small mb-2">' + escapeHtml(rec.category) + ' · ' + escapeHtml(rec.level) + ' · ' + escapeHtml(rec.instructor) + '</p>' +
+            '<p class="card-text small mb-3">' + escapeHtml(rec.explanation) + '</p>' +
+            '<a href="' + courseDetailUrlTemplate.replace('999999', rec.course_id) + '" class="btn btn-sm btn-primary">View course</a>' +
+            '</div></div>';
+          wrap.appendChild(col);
+        });
+        return wrap;
+      }
+
+      function appendUserBubble(content, timeLabel) {
+        const row = document.createElement('div');
+        row.className = 'mb-4 chat-row text-end';
+        row.dataset.role = 'user';
+        row.innerHTML =
+          '<small class="text-muted d-block mb-1">You · ' + escapeHtml(timeLabel) + '</small>' +
+          '<div class="chat-bubble p-3 rounded bg-primary text-white d-inline-block text-start" style="max-width: 85%; margin-left: auto;">' +
+          '<span class="bubble-text">' + escapeHtml(content) + '</span></div>';
+        chatMessages.appendChild(row);
+        scrollToBottom();
+      }
+
+      function appendAssistantBubble(content, timeLabel, recs) {
+        const row = document.createElement('div');
+        row.className = 'mb-4 chat-row';
+        row.dataset.role = 'assistant';
+        row.innerHTML =
+          '<small class="text-muted d-block mb-1">Course Advisor · ' + escapeHtml(timeLabel) + '</small>' +
+          '<div class="chat-bubble p-3 rounded bg-light border" style="max-width: 85%;">' +
+          '<span class="bubble-text"></span></div>';
+        chatMessages.appendChild(row);
+        scrollToBottom();
+
+        const textEl = row.querySelector('.bubble-text');
+        typeWriter(textEl, content, 16, function () {
+          const cards = buildRecCards(recs);
+          if (cards) {
+            row.appendChild(cards);
+            scrollToBottom();
+          }
+        });
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const textarea = document.getElementById('message');
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        const welcome = document.getElementById('chat-welcome');
+        if (welcome) welcome.remove();
+
+        sendBtn.disabled = true;
+        statusEl.classList.remove('d-none');
+
+        const formData = new FormData(form);
+        formData.set('message', text);
+        textarea.value = '';
+
+        try {
+          const response = await fetch("{% url 'course-recommend-send' %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData,
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            alert(data.error || 'Something went wrong.');
+            return;
+          }
+          appendUserBubble(data.user_message.content, data.user_message.created_at);
+          appendAssistantBubble(
+            data.assistant_message.content,
+            data.assistant_message.created_at,
+            data.assistant_message.recommendations_data
+          );
+        } catch (err) {
+          alert('Network error. Please try again.');
+        } finally {
+          sendBtn.disabled = false;
+          statusEl.classList.add('d-none');
+          textarea.focus();
+        }
+      });
+
+      scrollToBottom();
+    })();
+  </script>
+{% endblock %}

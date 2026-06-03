@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .permissions import IsInstructorOrReadOnly , IsStudent ,IsInstructor ,IsOwner
 from django.db.models import Q
 from rest_framework.views import APIView
+from ..querysets import filter_published_courses
 
 
 
@@ -41,18 +42,12 @@ class   CoursesAPIView(APIView):
         return Response(serializer.data, status.HTTP_200_OK)
 
      courses = Course.objects.filter(is_published=True)
-
-     level = request.query_params.get("level")
-     if level:
-        courses = courses.filter(level=level)
-
-     category = request.query_params.get("category")
-     if category:
-        courses = courses.filter(category__slug=category)
-
-     search = request.query_params.get("search")
-     if search:
-        courses = courses.filter(title__icontains=search)
+     courses = filter_published_courses(
+        courses,
+        search=request.query_params.get("search"),
+        category=request.query_params.get("category"),
+        level=request.query_params.get("level"),
+     )
 
      serializer = CourseSerializer(courses, many=True)
      return Response(serializer.data, status.HTTP_200_OK)

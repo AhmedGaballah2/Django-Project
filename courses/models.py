@@ -48,4 +48,59 @@ class Enrollment(models.Model):
 
 
     class Meta:
-        unique_together= ('student', 'course') 
+        unique_together= ('student', 'course')
+
+
+class CourseDocument(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="documents")
+    title = models.CharField(max_length=200)
+    file = models.FileField(upload_to="course_documents/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.course.title})"
+
+
+class ChatMessage(models.Model):
+    ROLE_CHOICES = [
+        ("user", "User"),
+        ("assistant", "Assistant"),
+    ]
+    SOURCE_CHOICES = [
+        ("RAG", "RAG"),
+        ("General", "General"),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_messages")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="chat_messages")
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    content = models.TextField()
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.student.username} — {self.course.title} ({self.role})"
+
+
+class RecommendChatMessage(models.Model):
+    ROLE_CHOICES = [
+        ("user", "User"),
+        ("assistant", "Assistant"),
+    ]
+
+    student = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="recommend_chat_messages"
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    content = models.TextField()
+    recommendations_data = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.student.username} — recommend ({self.role})"

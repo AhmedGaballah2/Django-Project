@@ -230,6 +230,41 @@ In `courses_platform/settings.py`:
 - Add SSL/HTTPS configuration
 - Configure CORS if needed for API
 
+## AI Features (RAG + Multi-Agent Assistant)
+
+This project includes:
+
+- **RAG course recommender** — semantic search over published courses (`POST /api/v1/courses/recommend/` with `{"query": "..."}`) and web UI at `/courses/recommend/`
+- **Multi-agent teaching assistant** — orchestrator routes to RAG (course documents) or General (subject knowledge) agents (`POST /api/v1/courses/<id>/chat/` with `{"message": "..."}`) and web UI at `/courses/<id>/assistant/`
+- **Course documents** — teachers upload PDF/txt at `/courses/<id>/documents/` or `POST /api/v1/courses/<id>/documents/`
+
+### Configure the LLM and vector store
+
+1. Copy `.env.example` to `.env` in the project root.
+2. Set your OpenRouter API key (from [openrouter.ai/keys](https://openrouter.ai/keys)):
+   ```
+   OPENROUTER_API_KEY=sk-or-v1-...
+   ```
+3. Install dependencies (includes ChromaDB and LangChain):
+   ```bash
+   py -m pip install -r requirments.txt
+   ```
+4. Seed categories (if needed) and index published courses:
+   ```bash
+   py manage.py seed_categories
+   py manage.py index_course_catalog
+   ```
+
+ChromaDB data is stored locally in `chroma_data/`. Uploaded files are stored in `media/`. The catalog re-indexes automatically when a course is published or updated; course documents re-index on upload via Django signals.
+
+### API — search and filter
+
+`GET /api/v1/courses/?search=python&category=programming&level=beginner`
+
+### Web — search and filter
+
+`GET /courses/?search=python&category=programming&level=beginner`
+
 ## License
 
 This project is provided as-is for educational purposes.
